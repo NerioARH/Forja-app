@@ -1,0 +1,21 @@
+{
+  "name": "FORJA - RPG Fitness & Muscle Map",
+  "short_name": "FORJA",
+  "description": "Domina tu entrenamiento con un mapa muscular visual evolutivo y mecánicas RPG. 100% offline y en español.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090D16",
+  "theme_color": "#00F0FF",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>FORJA — Minimalist Fitness, Daily Tracker & Muscle Map</title>
+  
+  <!-- PWA & Mobile Native Meta Tags -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#09090B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FORJA">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="mobile-app-shell">
+    <!-- Top Minimalist Bar -->
+    <header class="mobile-top-bar">
+      <div class="top-brand">
+        <div class="brand-monogram">F</div>
+        <div>
+          <h1 class="brand-name">FORJA</h1>
+          <span class="brand-rank" id="hudRankTitle">Nivel 1 • Novato</span>
+        </div>
+      </div>
+
+      <div class="top-plan-badge" id="hudPlanBadge" title="Toca para cambiar tu objetivo">
+        <span class="plan-dot"></span>
+        <span class="plan-label" id="hudPlanText">Seguimiento</span>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-touch-btn" id="btnSoundToggle" aria-label="Sonido">
+          <span id="soundIcon">🔊</span>
+        </button>
+        <button class="icon-touch-btn" id="btnSettingsModal" aria-label="Ajustes">
+          <span>⚙️</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sub-bar: Plan summary & Streak -->
+    <div class="mobile-sub-bar">
+      <div class="sub-quest-info">
+        <span class="quest-tag" id="hudFocusTag">META</span>
+        <span class="quest-text" id="questProgress">Alcanza 12+ series en tus músculos clave</span>
+      </div>
+      <div class="sub-streak-pill" id="hudStreak">
+        1 Sem 🔥
+      </div>
+    </div>
+
+    <!-- MAIN VIEWS -->
+    <main class="mobile-content-area">
+      <!-- TAB 1: HOY / CHECKLIST DIARIO (DEFAULT) -->
+      <section class="mobile-tab-view active" id="tabViewDaily">
+        <!-- Day Selector Strip (LUN a DOM) -->
+        <div class="daily-week-strip" id="dailyWeekStrip">
+          <!-- Populated by JS: LUN, MAR, MIÉ, JUE, VIE, SÁB, DOM -->
+        </div>
+
+        <!-- Day Header Card -->
+        <div class="day-overview-card">
+          <div class="doc-top">
+            <div>
+              <span class="doc-day-tag" id="docDayTag">HOY • LUNES</span>
+              <h2 class="doc-title" id="docDayTitle">Glúteos & Femorales</h2>
+            </div>
+            <div class="doc-score-badge">
+              <span class="doc-score-val" id="docScoreVal">0%</span>
+              <span class="doc-score-lbl">Completado</span>
+            </div>
+          </div>
+
+          <div class="doc-progress-bar-bg">
+            <div class="doc-progress-bar-fill" id="docProgressFill" style="width: 0%;"></div>
+          </div>
+
+          <div class="doc-footer">
+            <span id="docStatusText">0 de 4 ejercicios completados</span>
+            <span class="doc-xp-tag" id="docXpTag">+0 XP hoy</span>
+          </div>
+        </div>
+
+        <!-- Day Completion Celebration Banner -->
+        <div class="day-completed-banner" id="dayCompletedBanner" style="display: none;">
+          <div class="dcb-content">
+            <strong>🎉 ¡Entrenamiento del día completado!</strong>
+            <p>Has ganado +150 XP de bono diario. Tu mapa muscular se ha actualizado.</p>
+          </div>
+        </div>
+
+        <!-- Daily Routine Checklist -->
+        <div class="daily-checklist-section">
+          <div class="section-title-row">
+            <h3>Ejercicios de Hoy</h3>
+            <button class="add-exercise-btn" id="btnAddCustomExercise">+ Añadir Ejercicio</button>
+          </div>
+
+          <div class="checklist-items-container" id="checklistContainer">
+            <!-- Populated dynamically: exercises with checkboxes, series, and strike-through -->
+          </div>
+        </div>
+
+        <!-- Today Logged Sets Feed -->
+        <div class="today-sets-summary">
+          <div class="section-title-row" style="margin-top: 14px;">
+            <h3>Series Registradas Hoy</h3>
+            <span id="todaySetsCountText" style="font-size: 0.72rem; color: var(--text-dim);">0 series</span>
+          </div>
+          <div class="mobile-history-feed" id="todayWorkoutFeed"></div>
+        </div>
+      </section>
+
+      <!-- TAB 2: SILUETA & MAPA MUSCULAR -->
+      <section class="mobile-tab-view" id="tabViewBody">
+        <!-- Segmented Control Frente/Espalda -->
+        <div class="mobile-segmented-control">
+          <button class="segment-btn active" id="btnViewFront">FRENTE</button>
+          <button class="segment-btn" id="btnViewBack">ESPALDA</button>
+        </div>
+
+        <!-- Silhouette Viewport -->
+        <div class="mobile-silhouette-box">
+          <!-- Front Body SVG -->
+          <svg id="svgBodyFront" class="body-svg" viewBox="0 0 300 520" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="whiteGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3.5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- Anatomical Base Silhouette -->
+            <g class="body-silhouette-base" opacity="0.35">
+              <ellipse cx="150" cy="40" rx="19" ry="24" />
+              <rect x="141" y="60" width="18" height="15" rx="3" />
+              <line x1="105" y1="78" x2="195" y2="78" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+              <line x1="150" y1="85" x2="150" y2="235" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="3,3" />
+              <polygon points="120,230 180,230 172,246 128,246" />
+              <path d="M 112 475 L 126 475 L 128 495 L 106 495 Z" />
+              <path d="M 188 475 L 174 475 L 172 495 L 194 495 Z" />
+              <ellipse cx="78" cy="262" rx="7" ry="12" />
+              <ellipse cx="222" cy="262" rx="7" ry="12" />
+            </g>
+
+            <!-- Front Muscles -->
+            <path class="muscle-part vol-0" data-muscle="back" d="M 141 64 L 125 78 L 138 86 L 145 72 Z" />
+            <path class="muscle-part vol-0" data-muscle="back" d="M 159 64 L 175 78 L 162 86 L 155 72 Z" />
+
+            <path class="muscle-part vol-0" data-muscle="shoulders" d="M 125 76 C 105 80 92 94 89 114 C 89 124 95 130 103 128 C 110 126 116 116 120 100 C 122 90 124 82 125 76 Z" />
+            <path class="muscle-part vol-0" data-muscle="shoulders" d="M 175 76 C 195 80 208 94 211 114 C 211 124 205 130 197 128 C 190 126 184 116 180 100 C 178 90 176 82 175 76 Z" />
+
+            <path class="muscle-part vol-0" data-muscle="chest" d="M 124 86 C 135 84 145 86 148 88 L 148 135 C 138 138 124 136 114 126 C 112 116 116 100 124 86 Z" />
+            <path class="muscle-part vol-0" data-muscle="chest" d="M 176 86 C 165 84 155 86 152 88 L 152 135 C 162 138 176 136 186 126 C 188 116 184 100 176 86 Z" />
+
+            <path class="muscle-part vol-0" data-muscle="biceps" d="M 98 128 C 89 133 83 146 84 163 C 85 176 91 184 97 182 C 103 178 107 163 106 146 C 105 136 102 131 98 128 Z" />
+            <path class="muscle-part vol-0" data-muscle="biceps" d="M 202 128 C 211 133 217 146 216 163 C 215 176 209 184 203 182 C 197 178 193 163 194 146 C 195 136 198 131 202 128 Z" />
+
+            <path class="muscle-part vol-0" data-muscle="biceps" d="M 86 184 C 79 192 73 210 73 230 C 74 243 79 250 84 248 C 89 246 94 233 96 216 C 97 202 95 191 86 184 Z" opacity="0.85" />
+            <path class="muscle-part vol-0" data-muscle="biceps" d="M 214 184 C 221 192 227 210 227 230 C 226 243 221 250 216 248 C 211 246 206 233 204 216 C 203 202 205 191 214 184 Z" opacity="0.85" />
+
+            <g class="muscle-part vol-0" data-muscle="core">
+              <rect x="133" y="140" width="14" height="20" rx="3" />
+              <rect x="153" y="140" width="14" height="20" rx="3" />
+              <rect x="133" y="165" width="14" height="22" rx="3" />
+              <rect x="153" y="165" width="14" height="22" rx="3" />
+              <polygon points="134,192 147,192 147,218 138,216" />
+              <polygon points="153,192 166,192 162,216 153,218" />
+            </g>
+
+            <path class="muscle-part vol-0" data-muscle="core" d="M 121 144 C 127 147 129 161 129 179 C 129 197 125 211 121 221 C 116 211 114 194 115 174 C 116 157 119 147 121 144 Z" opacity="0.85" />
+            <path class="muscle-part vol-0" data-muscle="core" d="M 179 144 C 173 147 171 161 171 179 C 171 197 175 211 179 221 C 184 211 186 194 185 174 C 184 157 181 147 179 144 Z" opacity="0.85" />
+
+            <path class="muscle-part vol-0" data-muscle="quads" d="M 120 236 C 108 248 102 275 104 312 C 105 335 112 355 122 365 C 130 365 138 350 142 328 C 145 305 142 272 136 245 C 130 238 125 235 120 236 Z" />
+            <path class="muscle-part vol-0" data-muscle="quads" d="M 180 236 C 192 248 198 275 196 312 C 195 335 188 355 178 365 C 170 365 162 350 158 328 C 155 305 158 272 164 245 C 170 238 175 235 180 236 Z" />
+
+            <path class="muscle-part vol-0" data-muscle="calves" d="M 116 376 C 108 388 106 410 108 438 C 110 455 116 468 124 470 C 128 468 132 452 134 430 C 135 410 132 390 126 376 Z" />
+            <path class="muscle-part vol-0" data-muscle="calves" d="M 184 376 C 192 388 194 410 192 438 C 190 455 184 468 176 470 C 172 468 168 452 166 430 C 165 410 168 390 174 376 Z" />
+          </svg>
+
+          <!-- Back Body SVG -->
+          <svg id="svgBodyBack" class="body-svg" viewBox="0 0 300 520" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <g class="body-silhouette-base" opacity="0.35">
+              <ellipse cx="150" cy="40" rx="19" ry="24" />
+              <rect x="141" y="60" width="18" height="15" rx="3" />
+              <line x1="150" y1="75" x2="150" y2="235" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-dasharray="3,3" />
+              <path d="M 112 475 L 126 475 L 128 495 L 106 495 Z" />
+              <path d="M 188 475 L 174 475 L 172 495 L 194 495 Z" />
+              <ellipse cx="78" cy="262" rx="7" ry="12" />
+              <ellipse cx="222" cy="262" rx="7" ry="12" />
+            </g>
+
+            <path class="muscle-part vol-0" data-muscle="back" d="M 150 68 L 130 82 L 126 102 L 142 135 L 150 140 L 158 135 L 174 102 L 170 82 Z" />
+
+            <path class="muscle-part vol-0" data-muscle="shoulders" d="M 124 82 C 104 88 92 102 90 118 C 92 128 98 130 106 128 C 114 122 120 110 122 96 Z" />
+            <path class="muscle-part vol-0" data-muscle="shoulders" d="M 176 82 C 196 88 208 102 210 118 C 208 128 202 130 194 128 C 186 122 180 110 178 96 Z" />
+
+            <path class="muscle-part vol-0" data-muscle="triceps" d="M 94 128 C 86 136 82 152 84 172 C 86 182 92 186 98 184 C 104 178 106 162 105 145 C 104 135 100 130 94 128 Z" />
+            <path class="muscle-part vol-0" data-muscle="triceps" d="M 206 128 C 214 136 218 152 216 172 C 214 182 208 186 202 184 C 196 178 194 162 195 145 C 196 135 200 130 206 128 Z" />
+
+            <path class="muscle-part vol-0" data-muscle="back" d="M 124 115 C 112 128 108 155 112 188 C 115 198 125 198 134 195 C 140 185 142 165 142 142 Z" />
+            <path class="muscle-part vol-0" data-muscle="back" d="M 176 115 C 188 128 192 155 188 188 C 185 198 175 198 166 195 C 160 185 158 165 158 142 Z" />
+
+            <path class="muscle-part vol-0" data-muscle="back" d="M 136 196 L 148 196 L 148 226 L 138 226 Z" opacity="0.85" />
+            <path class="muscle-part vol-0" data-muscle="back" d="M 152 196 L 164 196 L 162 226 L 152 226 Z" opacity="0.85" />
+
+            <path class="muscle-part vol-0" data-muscle="glutes" d="M 118 228 C 108 238 108 265 116 284 C 124 290 138 290 146 278 C 148 262 148 242 145 228 Z" />
+            <path class="muscle-part vol-0" data-muscle="glutes" d="M 182 228 C 192 238 192 265 184 284 C 176 290 162 290 154 278 C 152 262 152 242 155 228 Z" />
+
+            <path class="muscle-part vol-0" data-muscle="hamstrings" d="M 118 288 C 108 302 108 335 112 360 C 118 366 130 366 138 355 C 144 340 145 315 144 288 Z" />
+            <path class="muscle-part vol-0" data-muscle="hamstrings" d="M 182 288 C 192 302 192 335 188 360 C 182 366 170 366 162 355 C 156 340 155 315 156 288 Z" />
+
+            <path class="muscle-part vol-0" data-muscle="calves" d="M 114 374 C 105 390 104 415 106 442 C 109 460 118 468 126 468 C 134 464 136 445 136 422 C 135 400 130 385 124 374 Z" />
+            <path class="muscle-part vol-0" data-muscle="calves" d="M 186 374 C 195 390 196 415 194 442 C 191 460 182 468 174 468 C 166 464 164 445 164 422 C 165 400 170 385 176 374 Z" />
+          </svg>
+        </div>
+
+        <!-- Horizontal Thumb Selector Carousel -->
+        <div class="thumb-muscle-scroller" id="thumbMuscleScroller"></div>
+
+        <!-- Selected Muscle Card -->
+        <div class="active-muscle-card" id="muscleInspector">
+          <div class="am-header">
+            <div>
+              <div class="am-title" id="inspectorName">Pecho (Pectorales)</div>
+              <div class="am-sub" id="inspectorVolumeText">0 de 16 series óptimas</div>
+            </div>
+            <span class="am-badge vol-0" id="inspectorStatusTag">0 series</span>
+          </div>
+          <div class="am-footer">
+            <p class="am-advice" id="inspectorAdvice">Faltan series para el estímulo óptimo.</p>
+            <button class="am-log-btn" id="btnInspectLog">
+              <span>+</span> Registrar
+            </button>
+          </div>
+        </div>
+
+        <!-- Monochrome Legend Bar -->
+        <div class="mobile-legend-bar">
+          <span class="l-pill"><i style="background:var(--muscle-lvl0);"></i>0 Frío</span>
+          <span class="l-pill"><i style="background:var(--muscle-lvl1);"></i>1-5</span>
+          <span class="l-pill"><i style="background:var(--muscle-lvl2);"></i>6-11</span>
+          <span class="l-pill"><i style="background:var(--muscle-lvl3);"></i>12-18 Óptimo</span>
+          <span class="l-pill"><i style="background:var(--muscle-lvl4);"></i>19-24 Máx</span>
+        </div>
+      </section>
+
+      <!-- TAB 3: RESUMEN SEMANAL & HISTORIAL COMPARATIVO -->
+      <section class="mobile-tab-view" id="tabViewWeeklyHistory">
+        <!-- Current Week Performance Summary -->
+        <div class="week-summary-card">
+          <div class="wsc-header">
+            <div>
+              <span class="wsc-badge">SEMANA ACTUAL</span>
+              <h2 class="wsc-title">Rendimiento Semanal</h2>
+            </div>
+            <span class="wsc-score-tag" id="wscScoreTag">ÓPTIMO</span>
+          </div>
+
+          <div class="wsc-metrics-grid">
+            <div class="wsc-metric-box">
+              <span class="wsc-mb-val" id="wscTotalSets">0</span>
+              <span class="wsc-mb-lbl">Series Totales</span>
+            </div>
+            <div class="wsc-metric-box">
+              <span class="wsc-mb-val" id="wscDaysCompleted">0/4</span>
+              <span class="wsc-mb-lbl">Días Cumplidos</span>
+            </div>
+            <div class="wsc-metric-box">
+              <span class="wsc-mb-val" id="wscComplianceRate">0%</span>
+              <span class="wsc-mb-lbl">Adherencia</span>
+            </div>
+          </div>
+
+          <button class="wsc-archive-btn" id="btnArchiveCurrentWeek">
+            🔄 Cerrar Semana y Archivar
+          </button>
+        </div>
+
+        <!-- Comparative History Section -->
+        <div class="history-compare-section">
+          <div class="section-title-row">
+            <h3>Comparador de Semanas</h3>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">¿En cuáles rendiste más?</span>
+          </div>
+
+          <!-- Volume Bar Chart Comparison -->
+          <div class="history-chart-card">
+            <span class="hcc-chart-title">Volumen de Series por Semana</span>
+            <div class="hcc-bars-container" id="historyBarsContainer">
+              <!-- Rendered dynamically by JS -->
+            </div>
+          </div>
+
+          <!-- Historical Weeks Cards List -->
+          <div class="history-weeks-list" id="historyWeeksList">
+            <!-- Rendered dynamically: Semanas anteriores con etiquetas de rendimiento -->
+          </div>
+
+          <button class="hud-btn" id="btnLoadHistoryDemo" style="width: 100%; justify-content: center; margin-top: 10px; font-size: 0.78rem;">
+            📊 Cargar 4 Semanas de Demostración para Comparar
+          </button>
+        </div>
+
+        <!-- Volume by Muscle Groups breakdown -->
+        <div class="mobile-section-header" style="margin-top: 20px;">
+          <h2>Desglose por Músculo</h2>
+          <span id="totalSetsCount">0 series</span>
+        </div>
+        <div class="mobile-volume-list" id="musclesGridList"></div>
+      </section>
+
+      <!-- TAB 4: COMPARTIR EN REDES -->
+      <section class="mobile-tab-view" id="tabViewShare">
+        <div class="mobile-section-header">
+          <h2>Tarjeta Editorial</h2>
+          <span style="font-size: 0.78rem; color: var(--text-dim);">Formato Stories 9:16</span>
+        </div>
+        <div class="mobile-share-card-container">
+          <canvas id="shareCanvas" width="540" height="960"></canvas>
+          <button class="primary-touch-btn" id="btnDownloadStory">
+            Descargar Imagen HD
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- BOTTOM NAVIGATION (THUMB ZONE) -->
+    <nav class="mobile-bottom-nav">
+      <button class="nav-item active" data-tab="tabViewDaily">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">Hoy</span>
+      </button>
+
+      <button class="nav-item" data-tab="tabViewBody">
+        <span class="nav-icon">🗺️</span>
+        <span class="nav-label">Mapa</span>
+      </button>
+
+      <button class="nav-quick-add" id="btnFabLog" aria-label="Registrar Serie">
+        <span>+</span>
+      </button>
+
+      <button class="nav-item" data-tab="tabViewWeeklyHistory">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Semanas</span>
+      </button>
+
+      <button class="nav-item" data-tab="tabViewShare">
+        <span class="nav-icon">📸</span>
+        <span class="nav-label">Social</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- NATIVE BOTTOM SHEET: Registrar Serie -->
+  <div class="bottom-sheet-backdrop" id="modalLog">
+    <div class="bottom-sheet-panel">
+      <div class="sheet-drag-handle"></div>
+      
+      <div class="sheet-header">
+        <h3>Registrar Serie</h3>
+        <button class="sheet-close-btn" id="btnCloseLogModal">&times;</button>
+      </div>
+
+      <form id="formLogSet" class="sheet-form">
+        <div class="sheet-field">
+          <label class="sheet-label" for="selectMuscle">Músculo</label>
+          <select class="sheet-select" id="selectMuscle" required>
+            <option value="chest">Pecho (Pectorales)</option>
+            <option value="back">Espalda (Dorsales / Trapecios)</option>
+            <option value="shoulders">Hombros (Deltoides)</option>
+            <option value="biceps">Bíceps</option>
+            <option value="triceps">Tríceps</option>
+            <option value="core">Core / Abdomen</option>
+            <option value="quads">Cuádriceps (Piernas)</option>
+            <option value="hamstrings">Femorales (Isquios)</option>
+            <option value="glutes">Glúteos</option>
+            <option value="calves">Pantorrillas (Gemelos)</option>
+          </select>
+        </div>
+
+        <div class="sheet-field">
+          <label class="sheet-label" for="inputExercise">Ejercicio</label>
+          <input type="text" class="sheet-input" id="inputExercise" placeholder="Ej. Press de Banca Plano" required autocomplete="off">
+          <div class="sheet-chips-row" id="exerciseQuickPills"></div>
+        </div>
+
+        <div class="sheet-dual-fields">
+          <div class="sheet-field">
+            <label class="sheet-label" for="inputWeight">Peso (kg)</label>
+            <input type="number" class="sheet-input touch-num" id="inputWeight" placeholder="70" step="0.5" min="0" required inputmode="decimal">
+          </div>
+          <div class="sheet-field">
+            <label class="sheet-label" for="inputReps">Reps</label>
+            <input type="number" class="sheet-input touch-num" id="inputReps" placeholder="10" min="1" max="100" required inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="sheet-field">
+          <label class="sheet-label" for="selectRir">Esfuerzo (RIR)</label>
+          <select class="sheet-select" id="selectRir">
+            <option value="0">RIR 0 (Fallo muscular)</option>
+            <option value="1" selected>RIR 1 (1 rep en recámara)</option>
+            <option value="2">RIR 2 (2 reps en recámara)</option>
+            <option value="3">RIR 3 (Moderado)</option>
+          </select>
+        </div>
+
+        <button type="submit" class="sheet-submit-btn">
+          Guardar Serie (+50 XP)
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- NATIVE BOTTOM SHEET: Añadir Ejercicio Personalizado al Día -->
+  <div class="bottom-sheet-backdrop" id="modalAddCustomEx">
+    <div class="bottom-sheet-panel">
+      <div class="sheet-drag-handle"></div>
+      
+      <div class="sheet-header">
+        <h3>Añadir Ejercicio al Día</h3>
+        <button class="sheet-close-btn" id="btnCloseAddCustomEx">&times;</button>
+      </div>
+
+      <form id="formAddCustomEx" class="sheet-form">
+        <div class="sheet-field">
+          <label class="sheet-label" for="customExMuscle">Grupo Muscular</label>
+          <select class="sheet-select" id="customExMuscle" required>
+            <option value="chest">Pecho</option>
+            <option value="back">Espalda</option>
+            <option value="shoulders">Hombros</option>
+            <option value="biceps">Bíceps</option>
+            <option value="triceps">Tríceps</option>
+            <option value="core">Core</option>
+            <option value="quads">Cuádriceps</option>
+            <option value="hamstrings">Femorales</option>
+            <option value="glutes">Glúteos</option>
+            <option value="calves">Pantorrillas</option>
+          </select>
+        </div>
+
+        <div class="sheet-field">
+          <label class="sheet-label" for="customExName">Nombre del Ejercicio</label>
+          <input type="text" class="sheet-input" id="customExName" placeholder="Ej. Hip Thrust con Barra" required autocomplete="off">
+        </div>
+
+        <div class="sheet-dual-fields">
+          <div class="sheet-field">
+            <label class="sheet-label" for="customExSets">Series Planificadas</label>
+            <input type="number" class="sheet-input touch-num" id="customExSets" value="3" min="1" max="10" required>
+          </div>
+          <div class="sheet-field">
+            <label class="sheet-label" for="customExReps">Reps Objetivo</label>
+            <input type="number" class="sheet-input touch-num" id="customExReps" value="10" min="1" max="100" required>
+          </div>
+        </div>
+
+        <button type="submit" class="sheet-submit-btn">
+          Añadir a la Rutina de Hoy
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- NATIVE BOTTOM SHEET: Settings -->
+  <div class="bottom-sheet-backdrop" id="modalSettings">
+    <div class="bottom-sheet-panel">
+      <div class="sheet-drag-handle"></div>
+      
+      <div class="sheet-header">
+        <h3>Ajustes</h3>
+        <button class="sheet-close-btn" id="btnCloseSettingsModal">&times;</button>
+      </div>
+
+      <div class="settings-touch-list">
+        <button class="settings-touch-row highlight" id="btnRestartOnboarding">
+          <span>🎯 Cambiar Objetivo o Rutina</span>
+        </button>
+        <button class="settings-touch-row" id="btnLoadDemo">
+          <span>⚡ Cargar Datos Demo (Semana Completa)</span>
+        </button>
+        <button class="settings-touch-row" id="btnResetWeek">
+          <span>🔄 Iniciar Nueva Semana</span>
+        </button>
+        <button class="settings-touch-row" id="btnExportJson">
+          <span>💾 Respaldar Datos (JSON)</span>
+        </button>
+        <button class="settings-touch-row danger" id="btnResetAll">
+          <span>🗑️ Restablecer todo</span>
+        </button>
+      </div>
+
+      <p class="settings-footer-note">
+        FORJA Minimalist • 100% Offline
+      </p>
+    </div>
+  </div>
+
+  <!-- ONBOARDING MODAL (WIZARD PRIMERA VEZ) -->
+  <div class="onboarding-overlay" id="modalOnboarding" style="display: none;">
+    <div class="onboarding-card">
+      <div class="ob-progress-container">
+        <div class="ob-progress-bar" id="obProgressBar" style="width: 25%;"></div>
+      </div>
+
+      <!-- Step 1: Starting point -->
+      <div class="ob-step active" id="obStep1">
+        <span class="ob-badge">Paso 1 de 4</span>
+        <h2 class="ob-title">¿Cuál es tu punto de partida?</h2>
+        <p class="ob-desc">Selecciona cómo deseas utilizar la aplicación:</p>
+
+        <div class="ob-options-vertical">
+          <button class="ob-choice-card" data-choice="have_routine">
+            <div class="ob-choice-header">
+              <span class="ob-choice-icon">📋</span>
+              <div>
+                <strong>Ya tengo mi rutina</strong>
+                <p>Quiero tachar mis ejercicios diarios, ver mi mapa muscular y comparar mis semanas.</p>
+              </div>
+            </div>
+          </button>
+
+          <button class="ob-choice-card" data-choice="need_routine">
+            <div class="ob-choice-header">
+              <span class="ob-choice-icon">✨</span>
+              <div>
+                <strong>Quiero que me armen una rutina</strong>
+                <p>Empiezo de cero o quiero una rutina diaria con ejercicios recomendados.</p>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Goal -->
+      <div class="ob-step" id="obStep2">
+        <span class="ob-badge">Paso 2 de 4</span>
+        <h2 class="ob-title">¿Cuál es tu meta principal?</h2>
+        <p class="ob-desc">Ajustaremos los volúmenes según lo que quieras lograr:</p>
+
+        <div class="ob-options-grid">
+          <button class="ob-chip-card" data-goal="hypertrophy">
+            <span class="ob-chip-title">Ganar masa muscular</span>
+            <span class="ob-chip-sub">Hipertrofia y desarrollo físico</span>
+          </button>
+          <button class="ob-chip-card" data-goal="fat_loss">
+            <span class="ob-chip-title">Rebajar / Perder grasa</span>
+            <span class="ob-chip-sub">Definición y tono muscular</span>
+          </button>
+          <button class="ob-chip-card" data-goal="weight_gain">
+            <span class="ob-chip-title">Subir de peso</span>
+            <span class="ob-chip-sub">Volumen y fuerza progresiva</span>
+          </button>
+          <button class="ob-chip-card" data-goal="strength">
+            <span class="ob-chip-title">Fuerza y rendimiento</span>
+            <span class="ob-chip-sub">Consistencia y resistencia</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: Priority Muscle Groups -->
+      <div class="ob-step" id="obStep3">
+        <span class="ob-badge">Paso 3 de 4</span>
+        <h2 class="ob-title">¿Qué zonas quieres mejorar?</h2>
+        <p class="ob-desc">Le daremos prioridad a estos músculos en tu rutina diaria:</p>
+
+        <div class="ob-options-grid">
+          <button class="ob-chip-card" data-focus="glutes_legs">
+            <span class="ob-chip-title">Glúteos y Piernas</span>
+            <span class="ob-chip-sub">Tren inferior firme y con volumen</span>
+          </button>
+          <button class="ob-chip-card" data-focus="chest_arms">
+            <span class="ob-chip-title">Pecho y Brazos</span>
+            <span class="ob-chip-sub">Pectorales, bíceps y tríceps</span>
+          </button>
+          <button class="ob-chip-card" data-focus="back_shoulders">
+            <span class="ob-chip-title">Espalda y Hombros</span>
+            <span class="ob-chip-sub">Silueta en V y postura estética</span>
+          </button>
+          <button class="ob-chip-card" data-focus="full_body">
+            <span class="ob-chip-title">Cuerpo Completo</span>
+            <span class="ob-chip-sub">Simetría y equilibrio integral</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4: Days per week -->
+      <div class="ob-step" id="obStep4">
+        <span class="ob-badge">Paso 4 de 4</span>
+        <h2 class="ob-title">¿Cuántos días entrenarás?</h2>
+        <p class="ob-desc">Distribuiremos tus rutinas diarias a lo largo de la semana:</p>
+
+        <div class="ob-options-vertical">
+          <button class="ob-choice-card" data-days="3">
+            <div class="ob-choice-header">
+              <span class="ob-day-num">3</span>
+              <div>
+                <strong>3 días por semana</strong>
+                <p>Estructura Full Body balanceada.</p>
+              </div>
+            </div>
+          </button>
+          <button class="ob-choice-card" data-days="4">
+            <div class="ob-choice-header">
+              <span class="ob-day-num">4</span>
+              <div>
+                <strong>4 días por semana</strong>
+                <p>División Torso / Pierna de alta eficiencia.</p>
+              </div>
+            </div>
+          </button>
+          <button class="ob-choice-card" data-days="5">
+            <div class="ob-choice-header">
+              <span class="ob-day-num">5</span>
+              <div>
+                <strong>5 días por semana</strong>
+                <p>Frecuencia óptima con aislamiento muscular.</p>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 5: Summary -->
+      <div class="ob-step" id="obStepSummary">
+        <span class="ob-badge">Configuración Lista</span>
+        <h2 class="ob-title" id="obSummaryPlanName">Tu Plan Diario y Semanal</h2>
+        <p class="ob-desc" id="obSummaryPlanDesc">Hemos calibrado tu rutina diaria y tu mapa muscular:</p>
+
+        <div class="ob-summary-card">
+          <div class="ob-sum-row">
+            <span>Objetivo</span>
+            <strong id="obSumGoal">Ganar masa muscular</strong>
+          </div>
+          <div class="ob-sum-row">
+            <span>Enfoque prioritario</span>
+            <strong id="obSumFocus">Glúteos y Piernas</strong>
+          </div>
+          <div class="ob-sum-row">
+            <span>Frecuencia</span>
+            <strong id="obSumDays">4 días / semana</strong>
+          </div>
+          <div class="ob-sum-row highlight">
+            <span>Dinámica</span>
+            <strong>Rutina diaria con tachado + Historial semanal</strong>
+          </div>
+        </div>
+
+        <button class="primary-touch-btn" id="btnFinishOnboarding" style="width: 100%; margin-top: 16px;">
+          Comenzar Entrenamiento
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

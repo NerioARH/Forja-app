@@ -15,9 +15,9 @@ El servidor local está activo:
 
 ## 💎 Novedades de esta Versión
 
-### 1. 📅 Rutinas Diarias con Tachado y Puntuación
-* **Selector de días:** Barra horizontal interactiva de **Lunes a Domingo** para navegar entre días.
-* **Rutina diaria personalizada:** Muestra el enfoque del día (ej. *Lunes • Glúteos & Femorales*, *Martes • Torso & Core*, etc.).
+### 1. 📐 Iconografía Vectorial Propia (Cero Emojis del Sistema)
+* Eliminados **100% de los emojis del sistema** (Windows/iOS/Android).
+* Sistema unificado de **28 iconos SVG vectoriales minimalistas** geométricos (trazo uniforme de 1.8px, diseño técnico y limpio en la barra inferior, encabezado, selector de rutinas y tarjetas de rendimiento).
 * **Checklist interactivo con tachado:**
   * Al tocar la casilla, el ejercicio se tacha suavemente con animación.
   * Suena un chime táctil y vibra el teléfono (`navigator.vibrate`).

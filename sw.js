@@ -1,10 +1,12 @@
-const CACHE_NAME = 'forja-cache-v1';
+const CACHE_NAME = 'forja-cache-v2';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  './logo-full.png',
+  './logo-mark.jpg'
 ];
 
 self.addEventListener('install', (event) => {

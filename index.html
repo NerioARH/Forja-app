@@ -13,7 +13,8 @@
   <meta name="apple-mobile-web-app-title" content="FORJA">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="format-detection" content="telephone=no">
-  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" type="image/jpeg" href="./logo-mark.jpg">
+  <link rel="apple-touch-icon" href="./logo-mark.jpg">
 
   <link rel="stylesheet" href="./styles.css">
 </head>
@@ -22,11 +23,8 @@
     <!-- Top Minimalist Bar -->
     <header class="mobile-top-bar">
       <div class="top-brand">
-        <div class="brand-monogram">F</div>
-        <div>
-          <h1 class="brand-name">FORJA</h1>
-          <span class="brand-rank" id="hudRankTitle">Nivel 1 • Novato</span>
-        </div>
+        <img src="./logo-full.png" alt="FORJA" class="brand-logo-img" />
+        <span class="brand-rank" id="hudRankTitle">Nivel 1 • Novato</span>
       </div>
 
       <div class="top-plan-badge" id="hudPlanBadge" title="Toca para cambiar tu objetivo">
@@ -36,10 +34,22 @@
 
       <div class="top-actions">
         <button class="icon-touch-btn" id="btnSoundToggle" aria-label="Sonido">
-          <span id="soundIcon">🔊</span>
+          <span id="soundIconContainer">
+            <svg class="icon-svg" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          </span>
         </button>
         <button class="icon-touch-btn" id="btnSettingsModal" aria-label="Ajustes">
-          <span>⚙️</span>
+          <svg class="icon-svg" viewBox="0 0 24 24">
+            <line x1="4" y1="21" x2="4" y2="14"></line>
+            <line x1="4" y1="10" x2="4" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12" y2="3"></line>
+            <line x1="20" y1="21" x2="20" y2="16"></line>
+            <line x1="20" y1="12" x2="20" y2="3"></line>
+            <line x1="1" y1="14" x2="7" y2="14"></line>
+            <line x1="9" y1="8" x2="15" y2="8"></line>
+            <line x1="17" y1="16" x2="23" y2="16"></line>
+          </svg>
         </button>
       </div>
     </header>
@@ -51,7 +61,10 @@
         <span class="quest-text" id="questProgress">Alcanza 12+ series en tus músculos clave</span>
       </div>
       <div class="sub-streak-pill" id="hudStreak">
-        1 Sem 🔥
+        <svg class="icon-svg sm" viewBox="0 0 24 24" style="stroke-width: 2.2;">
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z" />
+        </svg>
+        <span id="streakCountText">1 Sem</span>
       </div>
     </div>
 
@@ -61,7 +74,7 @@
       <section class="mobile-tab-view active" id="tabViewDaily">
         <!-- Day Selector Strip (LUN a DOM) -->
         <div class="daily-week-strip" id="dailyWeekStrip">
-          <!-- Populated by JS: LUN, MAR, MIÉ, JUE, VIE, SÁB, DOM -->
+          <!-- Populated by JS -->
         </div>
 
         <!-- Day Header Card -->
@@ -90,7 +103,13 @@
         <!-- Day Completion Celebration Banner -->
         <div class="day-completed-banner" id="dayCompletedBanner" style="display: none;">
           <div class="dcb-content">
-            <strong>🎉 ¡Entrenamiento del día completado!</strong>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <svg class="icon-svg sm" viewBox="0 0 24 24" style="stroke: #09090B; stroke-width: 2.5;">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <strong>Entrenamiento del día completado</strong>
+            </div>
             <p>Has ganado +150 XP de bono diario. Tu mapa muscular se ha actualizado.</p>
           </div>
         </div>
@@ -99,11 +118,14 @@
         <div class="daily-checklist-section">
           <div class="section-title-row">
             <h3>Ejercicios de Hoy</h3>
-            <button class="add-exercise-btn" id="btnAddCustomExercise">+ Añadir Ejercicio</button>
+            <button class="add-exercise-btn" id="btnAddCustomExercise">
+              <svg class="icon-svg sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Añadir</span>
+            </button>
           </div>
 
           <div class="checklist-items-container" id="checklistContainer">
-            <!-- Populated dynamically: exercises with checkboxes, series, and strike-through -->
+            <!-- Populated dynamically -->
           </div>
         </div>
 
@@ -239,7 +261,8 @@
           <div class="am-footer">
             <p class="am-advice" id="inspectorAdvice">Faltan series para el estímulo óptimo.</p>
             <button class="am-log-btn" id="btnInspectLog">
-              <span>+</span> Registrar
+              <svg class="icon-svg sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Registrar</span>
             </button>
           </div>
         </div>
@@ -282,7 +305,8 @@
           </div>
 
           <button class="wsc-archive-btn" id="btnArchiveCurrentWeek">
-            🔄 Cerrar Semana y Archivar
+            <svg class="icon-svg sm" viewBox="0 0 24 24" style="margin-right: 6px;"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            <span>Cerrar Semana y Archivar</span>
           </button>
         </div>
 
@@ -296,18 +320,15 @@
           <!-- Volume Bar Chart Comparison -->
           <div class="history-chart-card">
             <span class="hcc-chart-title">Volumen de Series por Semana</span>
-            <div class="hcc-bars-container" id="historyBarsContainer">
-              <!-- Rendered dynamically by JS -->
-            </div>
+            <div class="hcc-bars-container" id="historyBarsContainer"></div>
           </div>
 
           <!-- Historical Weeks Cards List -->
-          <div class="history-weeks-list" id="historyWeeksList">
-            <!-- Rendered dynamically: Semanas anteriores con etiquetas de rendimiento -->
-          </div>
+          <div class="history-weeks-list" id="historyWeeksList"></div>
 
           <button class="hud-btn" id="btnLoadHistoryDemo" style="width: 100%; justify-content: center; margin-top: 10px; font-size: 0.78rem;">
-            📊 Cargar 4 Semanas de Demostración para Comparar
+            <svg class="icon-svg sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            <span>Cargar 4 Semanas de Ejemplo</span>
           </button>
         </div>
 
@@ -328,7 +349,8 @@
         <div class="mobile-share-card-container">
           <canvas id="shareCanvas" width="540" height="960"></canvas>
           <button class="primary-touch-btn" id="btnDownloadStory">
-            Descargar Imagen HD
+            <svg class="icon-svg sm" viewBox="0 0 24 24" style="stroke: #09090B; margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Descargar Imagen HD</span>
           </button>
         </div>
       </section>
@@ -337,26 +359,34 @@
     <!-- BOTTOM NAVIGATION (THUMB ZONE) -->
     <nav class="mobile-bottom-nav">
       <button class="nav-item active" data-tab="tabViewDaily">
-        <span class="nav-icon">📅</span>
+        <span class="nav-icon">
+          <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </span>
         <span class="nav-label">Hoy</span>
       </button>
 
       <button class="nav-item" data-tab="tabViewBody">
-        <span class="nav-icon">🗺️</span>
+        <span class="nav-icon">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </span>
         <span class="nav-label">Mapa</span>
       </button>
 
       <button class="nav-quick-add" id="btnFabLog" aria-label="Registrar Serie">
-        <span>+</span>
+        <svg class="icon-svg lg" viewBox="0 0 24 24" style="stroke: #09090B; stroke-width: 2.8;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
       </button>
 
       <button class="nav-item" data-tab="tabViewWeeklyHistory">
-        <span class="nav-icon">📊</span>
+        <span class="nav-icon">
+          <svg class="icon-svg" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        </span>
         <span class="nav-label">Semanas</span>
       </button>
 
       <button class="nav-item" data-tab="tabViewShare">
-        <span class="nav-icon">📸</span>
+        <span class="nav-icon">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        </span>
         <span class="nav-label">Social</span>
       </button>
     </nav>
@@ -485,19 +515,24 @@
 
       <div class="settings-touch-list">
         <button class="settings-touch-row highlight" id="btnRestartOnboarding">
-          <span>🎯 Cambiar Objetivo o Rutina</span>
+          <svg class="icon-svg sm" viewBox="0 0 24 24" style="margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+          <span>Cambiar Objetivo o Rutina</span>
         </button>
         <button class="settings-touch-row" id="btnLoadDemo">
-          <span>⚡ Cargar Datos Demo (Semana Completa)</span>
+          <svg class="icon-svg sm" viewBox="0 0 24 24" style="margin-right: 8px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          <span>Cargar Datos Demo (Semana Completa)</span>
         </button>
         <button class="settings-touch-row" id="btnResetWeek">
-          <span>🔄 Iniciar Nueva Semana</span>
+          <svg class="icon-svg sm" viewBox="0 0 24 24" style="margin-right: 8px;"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          <span>Iniciar Nueva Semana</span>
         </button>
         <button class="settings-touch-row" id="btnExportJson">
-          <span>💾 Respaldar Datos (JSON)</span>
+          <svg class="icon-svg sm" viewBox="0 0 24 24" style="margin-right: 8px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          <span>Respaldar Datos (JSON)</span>
         </button>
         <button class="settings-touch-row danger" id="btnResetAll">
-          <span>🗑️ Restablecer todo</span>
+          <svg class="icon-svg sm" viewBox="0 0 24 24" style="stroke: #EF4444; margin-right: 8px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <span>Restablecer todo</span>
         </button>
       </div>
 
@@ -510,6 +545,10 @@
   <!-- ONBOARDING MODAL (WIZARD PRIMERA VEZ) -->
   <div class="onboarding-overlay" id="modalOnboarding" style="display: none;">
     <div class="onboarding-card">
+      <div class="onboarding-brand-header">
+        <img src="./logo-full.png" alt="FORJA" class="onboarding-logo-img" />
+      </div>
+
       <div class="ob-progress-container">
         <div class="ob-progress-bar" id="obProgressBar" style="width: 25%;"></div>
       </div>
@@ -523,7 +562,9 @@
         <div class="ob-options-vertical">
           <button class="ob-choice-card" data-choice="have_routine">
             <div class="ob-choice-header">
-              <span class="ob-choice-icon">📋</span>
+              <span class="ob-choice-icon">
+                <svg class="icon-svg lg" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14l2 2 4-4"></path></svg>
+              </span>
               <div>
                 <strong>Ya tengo mi rutina</strong>
                 <p>Quiero tachar mis ejercicios diarios, ver mi mapa muscular y comparar mis semanas.</p>
@@ -533,7 +574,9 @@
 
           <button class="ob-choice-card" data-choice="need_routine">
             <div class="ob-choice-header">
-              <span class="ob-choice-icon">✨</span>
+              <span class="ob-choice-icon">
+                <svg class="icon-svg lg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              </span>
               <div>
                 <strong>Quiero que me armen una rutina</strong>
                 <p>Empiezo de cero o quiero una rutina diaria con ejercicios recomendados.</p>
@@ -577,19 +620,34 @@
 
         <div class="ob-options-grid">
           <button class="ob-chip-card" data-focus="glutes_legs">
-            <span class="ob-chip-title">Glúteos y Piernas</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <svg class="icon-svg sm" viewBox="0 0 24 24"><path d="M7 21l3-9 4-1 3 10"></path><circle cx="12" cy="5" r="3"></circle></svg>
+              <span class="ob-chip-title">Glúteos y Piernas</span>
+            </div>
             <span class="ob-chip-sub">Tren inferior firme y con volumen</span>
           </button>
+
           <button class="ob-chip-card" data-focus="chest_arms">
-            <span class="ob-chip-title">Pecho y Brazos</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <svg class="icon-svg sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span class="ob-chip-title">Pecho y Brazos</span>
+            </div>
             <span class="ob-chip-sub">Pectorales, bíceps y tríceps</span>
           </button>
+
           <button class="ob-chip-card" data-focus="back_shoulders">
-            <span class="ob-chip-title">Espalda y Hombros</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <svg class="icon-svg sm" viewBox="0 0 24 24"><polygon points="12 2 19 21 12 17 5 21 12 2"></polygon></svg>
+              <span class="ob-chip-title">Espalda y Hombros</span>
+            </div>
             <span class="ob-chip-sub">Silueta en V y postura estética</span>
           </button>
+
           <button class="ob-chip-card" data-focus="full_body">
-            <span class="ob-chip-title">Cuerpo Completo</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <svg class="icon-svg sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              <span class="ob-chip-title">Cuerpo Completo</span>
+            </div>
             <span class="ob-chip-sub">Simetría y equilibrio integral</span>
           </button>
         </div>

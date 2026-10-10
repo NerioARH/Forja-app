@@ -1,21 +1,26 @@
 {
-  "name": "FORJA - RPG Fitness & Muscle Map",
+  "name": "FORJA — Minimalist Fitness & Muscle Map",
   "short_name": "FORJA",
-  "description": "Domina tu entrenamiento con un mapa muscular visual evolutivo y mecánicas RPG. 100% offline y en español.",
+  "description": "Entrenamiento minimalista, rutina diaria con tachado y mapa muscular evolutivo. 100% offline.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#090D16",
-  "theme_color": "#00F0FF",
+  "background_color": "#09090B",
+  "theme_color": "#09090B",
   "icons": [
     {
       "src": "./icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/jpeg"
     },
     {
       "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "./logo-mark.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg"
     }
   ]
 }

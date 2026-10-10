@@ -655,7 +655,7 @@ function toggleExerciseCompletion(dayKey, exerciseIndex) {
       setTimeout(() => {
         audio.playLevelUp();
         triggerHaptic([40, 60, 40]);
-        addExperience(150, '🎉 ¡Día completado al 100%!');
+        addExperience(150, '• ¡Día completado al 100%!');
       }, 400);
     }
   } else {
@@ -818,18 +818,24 @@ function renderHistoryWeeksList() {
     card.className = 'hw-card';
 
     let badgeClass = 'mid';
-    let badgeLabel = '⚡ Rendimiento Bueno';
+    let badgeLabel = 'Rendimiento Bueno';
+    let badgeIcon = `<svg class="icon-svg sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
     if (w.totalSets >= 40) {
       badgeClass = 'max';
-      badgeLabel = '🏆 Rendimiento Máximo';
+      badgeLabel = 'Rendimiento Máximo';
+      badgeIcon = `<svg class="icon-svg sm" viewBox="0 0 24 24" style="stroke: #09090B;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"></path><path d="M14 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>`;
     } else if (w.totalSets < 25) {
-      badgeLabel = '⚠️ Rendimiento Bajo';
+      badgeLabel = 'Rendimiento Bajo';
+      badgeIcon = `<svg class="icon-svg sm" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
     }
 
     card.innerHTML = `
       <div class="hw-top">
         <span class="hw-title">Semana ${w.weekNumber} (${w.dateRange})</span>
-        <span class="hw-badge ${badgeClass}">${badgeLabel}</span>
+        <span class="hw-badge ${badgeClass}" style="display: inline-flex; align-items: center; gap: 4px;">
+          ${badgeIcon}
+          <span>${badgeLabel}</span>
+        </span>
       </div>
       <div class="hw-metrics">
         <span><strong>${w.totalSets}</strong> series totales</span>
@@ -1078,7 +1084,9 @@ function updateHud() {
 
   const rank = getRankTitle(state.level);
   titleEl.textContent = `Nivel ${state.level} • ${rank}`;
-  streakEl.textContent = `${state.streakWeeks} Sem 🔥`;
+  
+  const streakCountEl = document.getElementById('streakCountText');
+  if (streakCountEl) streakCountEl.textContent = `${state.streakWeeks} Sem`;
 
   const profile = state.userProfile || {};
   planText.textContent = profile.planName || 'Seguimiento';
@@ -1424,10 +1432,14 @@ function setupSettingsHandlers() {
   });
 
   const soundBtn = document.getElementById('btnSoundToggle');
-  const soundIcon = document.getElementById('soundIcon');
+  const soundContainer = document.getElementById('soundIconContainer');
   soundBtn.addEventListener('click', () => {
     audio.enabled = !audio.enabled;
-    soundIcon.textContent = audio.enabled ? '🔊' : '🔇';
+    if (soundContainer) {
+      soundContainer.innerHTML = audio.enabled
+        ? `<svg class="icon-svg" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`
+        : `<svg class="icon-svg" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`;
+    }
     triggerHaptic(12);
     showFloatingXp(audio.enabled ? 'Sonido activado' : 'Sonido silenciado');
   });
@@ -1497,6 +1509,12 @@ function setupShareStory() {
   });
 }
 
+const brandLogoImg = new Image();
+brandLogoImg.src = './logo-full.png';
+
+const brandMarkImg = new Image();
+brandMarkImg.src = './logo-mark.jpg';
+
 function generateStoryCanvas(canvas) {
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
@@ -1509,15 +1527,21 @@ function generateStoryCanvas(canvas) {
   ctx.lineWidth = 1;
   ctx.strokeRect(30, 30, W - 60, H - 60);
 
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = '800 20px -apple-system, sans-serif';
-  ctx.textAlign = 'left';
-  ctx.fillText('FORJA // REPORTE SEMANAL', 60, 85);
+  // Official Logo Lockup
+  if (brandLogoImg.complete && brandLogoImg.naturalWidth > 0) {
+    ctx.drawImage(brandLogoImg, 60, 62, 135, 45);
+  } else {
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '800 22px -apple-system, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('FORJA', 60, 85);
+  }
 
   const profile = state.userProfile || {};
   ctx.fillStyle = '#A1A1AA';
-  ctx.font = '500 14px -apple-system, sans-serif';
-  ctx.fillText((profile.planName || 'SEGUIMIENTO LIBRE').toUpperCase(), 60, 110);
+  ctx.font = '600 12px -apple-system, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText((profile.planName || 'SEGUIMIENTO LIBRE').toUpperCase(), W - 60, 88);
 
   let totalSets = 0;
   let optimalCount = 0;
@@ -1566,10 +1590,13 @@ function generateStoryCanvas(canvas) {
     curY += 46;
   });
 
+  if (brandMarkImg.complete && brandMarkImg.naturalWidth > 0) {
+    ctx.drawImage(brandMarkImg, W / 2 - 12, 875, 24, 24);
+  }
   ctx.textAlign = 'center';
   ctx.fillStyle = '#71717A';
-  ctx.font = '500 13px -apple-system, sans-serif';
-  ctx.fillText(`DISCIPLINA & VOLUMEN • ${new Date().toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }).toUpperCase()}`, W / 2, 905);
+  ctx.font = '500 12px -apple-system, sans-serif';
+  ctx.fillText(`DISCIPLINA & VOLUMEN • ${new Date().toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }).toUpperCase()}`, W / 2, 915);
 }
 
 function drawMinimalBox(ctx, x, y, w, h, label, val) {
